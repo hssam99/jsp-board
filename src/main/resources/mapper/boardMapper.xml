@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace: mapper와 DAO 객체를 연결하기 위한 이름 -->
+<mapper namespace="boardMapper">
+<!--    sql 구문 작성 -->
+<!--    daoImpl -> namespace.id -> 어느 mapper의 어느 구문을 실행해야할지 결정 -->
+<!--    resultType = "나갈 객체의 타입" / parameterType = "들어오는 객체명(생략가능)"-->
+<!--    domain에 있는 Board객체가 나의 타입-->
+    <insert id="insert" parameterType="domain.Board">
+        INSERT INTO board (title, content, writer, imagefile)
+        VALUES (#{title}, #{content}, #{writer}, #{imagefile})
+    </insert>
+    <select id="list" resultType="domain.Board">
+        SELECT * FROM board
+    </select>
+    <select id="detail" parameterType="int" resultType="domain.Board">
+        SELECT * FROM board WHERE bno = #{bno}
+    </select>
+    <update id="update" parameterType="domain.Board">
+        UPDATE board
+        SET title = #{title},
+            content = #{content},
+            imagefile = #{imagefile},
+            moddate = now()
+        WHERE bno = #{bno}
+    </update>
+    <delete id="remove" parameterType="int">
+        DELETE FROM board WHERE bno = #{bno}
+    </delete>
+    <select id="getPageList" resultType="domain.Board" parameterType="domain.PagingVO">
+<!--        SELECT * FROM board-->
+<!--        ORDER BY bno DESC-->
+<!--        LIMIT #{pageStart}, #{qty}-->
+        SELECT a.bno, b.title, b.writer, b.regdate, b.imagefile
+        FROM (
+            SELECT bno FROM board
+            <include refid="search"></include>
+            ORDER BY bno DESC
+            LIMIT #{pageStart}, #{qty}
+        ) a LEFT JOIN board b ON a.bno=b.bno
+    </select>
+    <select id="getTotal" resultType="int">
+        SELECT COUNT(bno) FROM board
+        <include refid="search"></include>
+    </select>
+
+<!--    메소드처럼 sql도 조각으로 별도 설정해놓을 수 있음 / 언제든 호출 가능 -->
+    <sql id="search">
+        <if test="type != null">
+            <trim prefix="where (" suffix=")">
+                <choose>
+                    <when test = "type == 't'.toString()">
+                        title LIKE CONCAT('%', #{keyword}, '%')
+                    </when>
+                    <when test = "type == 'w'.toString()">
+                        writer LIKE CONCAT('%', #{keyword}, '%')
+                    </when>
+                    <when test = "type == 'c'.toString()">
+                        content LIKE CONCAT('%', #{keyword}, '%')
+                    </when>
+                </choose>
+            </trim>
+        </if>
+    </sql>
+
+</mapper>
