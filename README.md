@@ -25,7 +25,6 @@ https://www.notion.so/jsp_workspace-2b72afccb73680a89592e95e1a8fe517?source=copy
 
 ### 게시판
 - 게시글 CRUD (작성, 조회, 수정, 삭제)
-- 조회수 카운트
 - 페이징 처리
 - 검색 기능 (제목, 작성자, 내용)
 
@@ -43,9 +42,10 @@ https://www.notion.so/jsp_workspace-2b72afccb73680a89592e95e1a8fe517?source=copy
 src/main/java
 ├── controller/     # Servlet 컨트롤러
 ├── service/        # 비즈니스 로직
-├── dao/            # Data Access Object
+├── repository/     # Data Access Object
 ├── domain/         # VO 클래스
-└── config/         # DB 연결 설정
+├── handler/        # handler 클래스
+└── orm/         # DB 연결 설정
 
 src/main/webapp
 ├── WEB-INF/views/  # JSP 파일
